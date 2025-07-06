@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steph Shopping List - Corregido</title>
+    <style>
+        :root {
+            --primary-color: #E91E63; /* Pink */
+            --primary-dark: #C2185B;
+            --secondary-color: #fce4ec; /* Light Pink Background */
+            --accent-color: #9C27B0; /* Purple */
+            --accent-dark: #7B1FA2;
+            --text-color: #444;
+            --text-light: #888;
+            --border-color: #f8bbd0; /* Lighter Pink Border */
+            --white: #ffffff;
+            --danger-color: #F44336;
+            --danger-dark: #D32F2F;
+            --edit-color: #2196F3;
+            --edit-dark: #1976D2;
+            --export-color: #4CAF50; /* Verde para exportar */
+            --export-dark: #388E3C;
+            --import-color: #FF9800; /* Naranja para importar */
+            --import-dark: #F57C00;
+            --share-color: #03A9F4; /* Azul para compartir */
+            --share-dark: #0288D1;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-radius: 12px; /* Bordes más redondeados */
+            --font-main: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            --font-logo: 'Georgia', 'Times New Roman', serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            font-size: 16px; /* Base font size */
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--secondary-color), #f3e5f5); /* Gradiente suave */
+            color: var(--text-color);
+            font-family: var(--font-main);
+            padding: 20px;
+            min-height: 100vh;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased; /* Mejor renderizado de fuentes en WebKit (Safari/iOS) */
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background: var(--white);
+            padding: 25px 30px 35px; /* Más padding inferior */
+            border-radius: var(--border-radius);
+            box-shadow: 0 8px 25px var(--shadow-color);
+            overflow: hidden; /* Para contener bordes redondeados */
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .offline-indicator {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #f44336;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            display: none;
+        }
+
+        .offline .offline-indicator {
+            display: block;
+        }
+
+        /* Logo Styling */
+        .logo-container {
+            margin-bottom: 10px;
+            cursor: default; /* Indicar que no es clickeable */
+        }
+
+        .logo-main {
+            font-family: var(--font-logo);
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            line-height: 1.1;
+        }
+
+        .logo-sub {
+            font-size: 1rem;
+            font-weight: 300;
+            color: var(--text-light);
+            letter-spacing: 1px; /* Espaciado ligero */
+            text-transform: uppercase;
+            margin-top: -5px; /* Ajuste fino */
+            display: block;
+        }
+
+        .export-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .input-group input[type="text"] {
+            flex-grow: 1;
+            padding: 14px 18px; /* Más padding */
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-family: var(--font-main);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .input-group input[type="text"]::placeholder {
+            color: #ccc; /* Placeholder más suave */
+        }
+
+        .input-group input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.2); /* Sombra de foco rosa */
+        }
+
+        /* Botones generales */
+        .btn {
+            padding: 14px 22px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600; /* Texto más bold en botones */
+            font-family: var(--font-main);
+            transition: background-color 0.3s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--white);
+            text-transform: capitalize;
+        }
+
+        .btn:hover {
+             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+            box-shadow: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-export {
+            background-color: var(--export-color);
+        }
+
+        .btn-export:hover {
+            background-color: var(--export-dark);
+        }
+
+        .btn-import {
+            background-color: var(--import-color);
+        }
+
+        .btn-import:hover {
+            background-color: var(--import-dark);
+        }
+
+        .btn-share {
+            background-color: var(--share-color);
+        }
+
+        .btn-share:hover {
+            background-color: var(--share-dark);
+        }
+
+        /* Lista */
+        .lista {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 30px; /* Espacio antes del botón de limpiar */
+        }
+
+        .item {
+            display: flex;
+            align-items: center;
+            padding: 15px 5px; /* Menos padding horizontal interno */
+            border-bottom: 1px solid #eee; /* Línea divisoria más suave */
+            transition: background-color 0.2s ease;
+             word-wrap: break-word;
+             overflow-wrap: break-word;
+        }
+
+        .item:last-child {
+            border-bottom: none;
+        }
+
+         .item:hover {
+            background-color: #fafafa; /* Fondo sutil al pasar el ratón */
+        }
+
+        .item .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            margin-right: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .item .checkbox.checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .item .checkbox.checked .icon-check {
+            display: block;
+        }
+
+        .item .item-content {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+
+        .item .item-text {
+            font-size: 1rem;
+            color: var(--text-color);
+             transition: color 0.3s ease, text-decoration-color 0.3s ease;
+        }
+
+        .item .item-text.checked {
+             text-decoration: line-through;
+             text-decoration-color: var(--primary-dark); /* Tachar con color */
+             color: var(--text-light); /* Texto más claro */
+        }
+
+        .item .item-actions {
+            display: flex;
+            gap: 5px; /* Menos espacio entre iconos */
+            flex-shrink: 0;
+        }
+
+        .item .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem; /* Iconos ligeramente más grandes */
+            padding: 8px; /* Área clickeable más grande */
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .item .btn-edit {
+            color: var(--edit-color);
+        }
+        .item .btn-edit:hover {
+            background-color: rgba(33, 150, 243, 0.1);
+            color: var(--edit-dark);
+        }
+
+        .item .btn-delete {
+            color: var(--danger-color);
+        }
+         .item .btn-delete:hover {
+            background-color: rgba(244, 67, 54, 0.1);
+            color: var(--danger-dark);
+        }
+         /* Estilo botones de guardar/cancelar edición */
+        .item .btn-save { color: var(--primary-color); }
+        .item .btn-save:hover { background-color: rgba(233, 30, 99, 0.1); color: var(--primary-dark); }
+        .item .btn-cancel { color: var(--text-light); }
+        .item .btn-cancel:hover { background-color: rgba(100, 100, 100, 0.1); color: var(--text-color); }
+
+        /* Input de edición */
+        .item input.edit-input {
+            flex-grow: 1;
+            font-size: 1rem;
+            padding: 8px 10px;
+            border: 1px solid var(--edit-color);
+            border-radius: var(--border-radius);
+            margin-right: 10px;
+            font-family: var(--font-main);
+        }
+        .item input.edit-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+        }
+
+        /* Botón Limpiar Todo */
+        .clear-all-container {
+            text-align: center; /* Centrar el botón */
+            margin-top: 20px;
+        }
+
+        #clearAllBtn {
+            background-color: var(--accent-color); /* Color diferente (púrpura) */
+            padding: 10px 25px; /* Un poco más pequeño */
+            font-size: 0.9rem;
+             font-weight: 400;
+        }
+        #clearAllBtn:hover {
+            background-color: var(--accent-dark);
+        }
+         /* Ocultar botón si la lista está vacía */
+         #clearAllBtn.hidden {
+            display: none;
+         }
+
+        /* SVG Icons */
+        .icon {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+        
+        .icon-check {
+            width: 12px;
+            height: 12px;
+            fill: white;
+            display: none;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        /* File input for import */
+        #importFile {
+            display: none;
+        }
+
+        /* --- Media Queries para Responsividad --- */
+        @media (max-width: 640px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                margin: 20px auto;
+                padding: 20px 20px 25px;
+            }
+             .logo-main {
+                font-size: 2.5rem;
+            }
+             .logo-sub {
+                font-size: 0.9rem;
+            }
+            .input-group input[type="text"],
+            .btn {
+                font-size: 0.95rem; /* Reducir tamaño de fuente en móvil */
+                padding: 12px 15px;
+            }
+            .item {
+                padding: 12px 0; /* Ajuste de padding vertical */
+            }
+             .item .checkbox {
+                width: 22px;
+                height: 22px;
+                margin-right: 12px;
+            }
+            .item .item-text {
+                font-size: 0.95rem;
+            }
+             .item .action-btn {
+                font-size: 1rem;
+                width: 32px;
+                height: 32px;
+                padding: 6px;
+            }
+            .export-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 400px) {
+             .logo-main {
+                font-size: 2.2rem;
+            }
+             .logo-sub {
+                font-size: 0.8rem;
+            }
+           
+             .item .item-content {
+                 margin-right: 5px; /* Menos espacio antes de los botones */
+             }
+             .item .item-actions {
+                gap: 2px; /* Aún menos espacio entre botones */
+             }
+             .item .action-btn {
+                width: 30px;
+                height: 30px;
+                padding: 5px;
+             }
+             #clearAllBtn {
+                 padding: 8px 20px;
+                 font-size: 0.85rem;
+             }
+             .btn {
+                 padding: 12px 18px;
+                 font-size: 0.9rem;
+             }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="offline-indicator">OFFLINE</div>
+            <div class="logo-container">
+                <div class="logo-main">Steph</div>
+                <div class="logo-sub">Shopping List</div>
+            </div>
+            
+            <div class="export-actions">
+                <button id="exportTxtBtn" class="btn btn-export">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/>
+                    </svg>
+                    Exportar TXT
+                </button>
+                <button id="exportJsonBtn" class="btn btn-export">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+                    </svg>
+                    Exportar JSON
+                </button>
+                <button id="copyBtn" class="btn btn-share">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                    </svg>
+                    Copiar
+                </button>
+                <button id="shareBtn" class="btn btn-share">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                    </svg>
+                    Compartir
+                </button>
+                <button id="importBtn" class="btn btn-import">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13h-4v-4H7l5-5 5 5h-3v4z"/>
+                    </svg>
+                    Importar
+                </button>
+                <input type="file" id="importFile" accept=".txt,.json">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="itemInput" placeholder="Añadir artículo..." aria-label="Añadir nuevo artículo de compra">
+            <button id="addItemBtn" class="btn btn-primary" aria-label="Agregar artículo a la lista">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+                Añadir
+            </button>
+        </div>
+
+        <ul class="lista" id="listaCompras" aria-live="polite">
+            <!-- Items se añadirán aquí -->
+        </ul>
+
+         <!-- Botón Limpiar Todo -->
+        <div class="clear-all-container">
+            <button id="clearAllBtn" class="btn hidden" aria-label="Limpiar toda la lista">
+                <svg class="icon" viewBox="0 0 24 24">
+                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                </svg>
+                Limpiar Toda la Lista
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast">¡Lista copiada al portapapeles!</div>
+
+    <script>
+        // Elementos DOM
+        const itemInput = document.getElementById('itemInput');
+        const listaCompras = document.getElementById('listaCompras');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const addItemBtn = document.getElementById('addItemBtn');
+        const toast = document.getElementById('toast');
+        const localStorageKey = 'stephShoppingList'; // Clave única para esta app
+
+        // Comprobar estado de conexión
+        function checkOnlineStatus() {
+            if (!navigator.onLine) {
+                document.body.classList.add('offline');
+            } else {
+                document.body.classList.remove('offline');
+            }
+        }
+
+        // Evento de cambio de estado de conexión
+        window.addEventListener('online', checkOnlineStatus);
+        window.addEventListener('offline', checkOnlineStatus);
+        checkOnlineStatus(); // Comprobar al cargar
+
+        // --- Funciones de exportación ---
+        document.getElementById('exportTxtBtn').addEventListener('click', exportarListaTxt);
+        document.getElementById('exportJsonBtn').addEventListener('click', exportarListaJson);
+        document.getElementById('copyBtn').addEventListener('click', copiarLista);
+        document.getElementById('shareBtn').addEventListener('click', compartirLista);
+        document.getElementById('importBtn').addEventListener('click', () => {
+            document.getElementById('importFile').click();
+        });
+        document.getElementById('importFile').addEventListener('change', importarLista);
+        addItemBtn.addEventListener('click', agregarItem);
+        clearAllBtn.addEventListener('click', eliminarTodaLista);
+        itemInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                agregarItem();
+            }
+        });
+
+        // --- Funciones CRUD ---
+
+        // CREAR (Agregar) Item
+        function agregarItem() {
+            const texto = itemInput.value.trim();
+            if (texto === '') {
+                itemInput.style.borderColor = 'red';
+                setTimeout(() => itemInput.style.borderColor = '', 1500);
+                return;
+            }
+
+            const nuevoItem = {
+                id: Date.now().toString(),
+                texto: texto,
+                checked: false
+            };
+
+            const items = obtenerItemsLocalStorage();
+            items.push(nuevoItem);
+            guardarItemsLocalStorage(items);
+            crearElementoItem(nuevoItem);
+
+            itemInput.value = '';
+            itemInput.focus();
+            actualizarVisibilidadBotonLimpiar();
+        }
+
+        // LEER (Cargar Lista)
+        function cargarLista() {
+            listaCompras.innerHTML = '';
+            const items = obtenerItemsLocalStorage();
+            items.forEach(item => crearElementoItem(item));
+            actualizarVisibilidadBotonLimpiar();
+        }
+
+        // ACTUALIZAR (Marcar/Desmarcar Checkbox)
+        function toggleCheck(itemId) {
+            const items = obtenerItemsLocalStorage();
+            const itemIndex = items.findIndex(item => item.id === itemId);
+
+            if (itemIndex > -1) {
+                items[itemIndex].checked = !items[itemIndex].checked;
+                guardarItemsLocalStorage(items);
+
+                const liElement = document.getElementById(`item-${itemId}`);
+                if (liElement) {
+                    const checkbox = liElement.querySelector('.checkbox');
+                    const text = liElement.querySelector('.item-text');
+                    
+                    if (items[itemIndex].checked) {
+                        checkbox.classList.add('checked');
+                    } else {
+                        checkbox.classList.remove('checked');
+                    }
+                    
+                    if (text) {
+                        text.classList.toggle('checked', items[itemIndex].checked);
+                    }
+                }
+            }
+        }
+
+        // ACTUALIZAR (Editar Texto) - Iniciar Edición
+        function iniciarEdicion(itemId) {
+            const liElement = document.getElementById(`item-${itemId}`);
+            if (!liElement) return;
+
+            const itemContent = liElement.querySelector('.item-content');
+            const actionsElement = liElement.querySelector('.item-actions');
+            const textElement = itemContent.querySelector('.item-text');
+            const currentText = textElement.textContent;
+
+            // Guardar el estado 'checked'
+            const isChecked = liElement.querySelector('.checkbox').classList.contains('checked');
+
+            // Crear input para editar
+            const editInput = document.createElement('input');
+            editInput.type = 'text';
+            editInput.className = 'edit-input';
+            editInput.value = currentText;
+            editInput.setAttribute('aria-label', `Editar ${currentText}`);
+
+            // Reemplazar texto con input
+            itemContent.innerHTML = '';
+            itemContent.appendChild(editInput);
+            editInput.focus();
+            editInput.select();
+
+            // Cambiar botones de acción
+            actionsElement.innerHTML = `
+                <button class="action-btn btn-save" title="Guardar Cambios" aria-label="Guardar cambios para ${currentText}">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                </button>
+                <button class="action-btn btn-cancel" title="Cancelar Edición" aria-label="Cancelar edición de ${currentText}">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
+                    </svg>
+                </button>
+            `;
+
+            // Asignar eventos a los nuevos botones
+            actionsElement.querySelector('.btn-save').addEventListener('click', () => guardarEdicion(itemId));
+            actionsElement.querySelector('.btn-cancel').addEventListener('click', () => cancelarEdicion(itemId, currentText, isChecked));
+
+            // Event listeners para Enter y Escape
+            editInput.addEventListener('keypress', (e) => {
+                 if (e.key === 'Enter') {
+                     guardarEdicion(itemId);
+                 }
+            });
+            editInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    cancelarEdicion(itemId, currentText, isChecked);
+                }
+            });
+        }
+
+        // ACTUALIZAR (Editar Texto) - Guardar Edición
+        function guardarEdicion(itemId) {
+             const liElement = document.getElementById(`item-${itemId}`);
+             if (!liElement) return;
+
+             const editInput = liElement.querySelector('.edit-input');
+             const nuevoTexto = editInput.value.trim();
+
+             if (nuevoTexto === '') {
+                 editInput.style.borderColor = 'red';
+                 setTimeout(() => editInput.style.borderColor = '', 1500);
+                 editInput.focus();
+                 return;
+             }
+
+             const items = obtenerItemsLocalStorage();
+             const itemIndex = items.findIndex(item => item.id === itemId);
+             if (itemIndex > -1) {
+                 items[itemIndex].texto = nuevoTexto;
+                 guardarItemsLocalStorage(items);
+                 restaurarVistaItem(liElement, items[itemIndex]);
+             }
+        }
+
+        // ACTUALIZAR (Editar Texto) - Cancelar Edición
+        function cancelarEdicion(itemId, textoOriginal, eraChecked) {
+            const liElement = document.getElementById(`item-${itemId}`);
+            if (!liElement) return;
+            const itemOriginal = { id: itemId, texto: textoOriginal, checked: eraChecked };
+            restaurarVistaItem(liElement, itemOriginal);
+        }
+
+        // Función auxiliar para restaurar la vista normal del ítem
+        function restaurarVistaItem(liElement, item) {
+            const itemContent = liElement.querySelector('.item-content');
+            const actionsElement = liElement.querySelector('.item-actions');
+
+            // Restaurar el contenido del item
+            itemContent.innerHTML = `
+                <span class="item-text ${item.checked ? 'checked' : ''}">${item.texto}</span>
+            `;
+
+            // Restaurar botones de acción
+            actionsElement.innerHTML = `
+                <button class="action-btn btn-edit" title="Editar Ítem" aria-label="Editar ${item.texto}">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                </button>
+                <button class="action-btn btn-delete" title="Eliminar Ítem" aria-label="Eliminar ${item.texto}">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                    </svg>
+                </button>
+            `;
+            
+            // Reasignar eventos
+            actionsElement.querySelector('.btn-edit').addEventListener('click', () => iniciarEdicion(item.id));
+            actionsElement.querySelector('.btn-delete').addEventListener('click', () => eliminarItem(item.id));
+        }
+
+        // ELIMINAR Item Individual
+        function eliminarItem(itemId) {
+             if (!confirm('¿Estás seguro de que quieres eliminar este artículo?')) {
+                 return;
+             }
+
+            let items = obtenerItemsLocalStorage();
+            items = items.filter(item => item.id !== itemId);
+            guardarItemsLocalStorage(items);
+
+            const liElement = document.getElementById(`item-${itemId}`);
+            if (liElement) {
+                 liElement.style.transition = 'opacity 0.3s ease, transform 0.3s ease, max-height 0.4s ease';
+                 liElement.style.opacity = '0';
+                 liElement.style.transform = 'translateX(20px)';
+                 liElement.style.maxHeight = '0';
+                 liElement.style.paddingTop = '0';
+                 liElement.style.paddingBottom = '0';
+                 liElement.style.borderWidth = '0';
+                 setTimeout(() => {
+                     liElement.remove();
+                     actualizarVisibilidadBotonLimpiar();
+                 }, 400);
+            }
+        }
+
+        // ELIMINAR Toda la Lista
+        function eliminarTodaLista() {
+            const items = obtenerItemsLocalStorage();
+            if (items.length === 0) return;
+
+            if (confirm('¿Estás seguro de que quieres borrar TODA la lista? Esta acción no se puede deshacer.')) {
+                localStorage.removeItem(localStorageKey);
+                const itemElements = listaCompras.querySelectorAll('.item');
+                 itemElements.forEach((liElement, index) => {
+                     liElement.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                     liElement.style.transitionDelay = `${index * 0.05}s`;
+                     liElement.style.opacity = '0';
+                     liElement.style.transform = 'translateX(-20px)';
+                 });
+
+                 const lastItemDelay = itemElements.length > 0 ? (itemElements.length - 1) * 0.05 : 0;
+                 setTimeout(() => {
+                     listaCompras.innerHTML = '';
+                     actualizarVisibilidadBotonLimpiar();
+                 }, (lastItemDelay + 0.3) * 1000);
+            }
+        }
+
+        function exportarListaTxt() {
+            const items = obtenerItemsLocalStorage();
+            if (items.length === 0) {
+                mostrarToast('La lista está vacía');
+                return;
+            }
+            
+            const texto = items.map(item => 
+                `${item.checked ? '[✓] ' : '[ ] '}${item.texto}`
+            ).join('\n');
+            
+            const blob = new Blob([texto], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'lista-de-compras.txt';
+            document.body.appendChild(a);
+            a.click();
+            
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 0);
+            
+            mostrarToast('Lista exportada como TXT');
+        }
+
+        function exportarListaJson() {
+            const items = obtenerItemsLocalStorage();
+            if (items.length === 0) {
+                mostrarToast('La lista está vacía');
+                return;
+            }
+            
+            const json = JSON.stringify(items, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'lista-de-compras.json';
+            document.body.appendChild(a);
+            a.click();
+            
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 0);
+            
+            mostrarToast('Lista exportada como JSON');
+        }
+
+        function copiarLista() {
+            const items = obtenerItemsLocalStorage();
+            if (items.length === 0) {
+                mostrarToast('La lista está vacía');
+                return;
+            }
+            
+            const texto = items.map(item => 
+                `${item.checked ? '✓' : ' '} ${item.texto}`
+            ).join('\n');
+            
+            navigator.clipboard.writeText(texto)
+                .then(() => mostrarToast('¡Lista copiada al portapapeles!'))
+                .catch(err => mostrarToast('Error al copiar: ' + err));
+        }
+
+        function compartirLista() {
+            const items = obtenerItemsLocalStorage();
+            if (items.length === 0) {
+                mostrarToast('La lista está vacía');
+                return;
+            }
+            
+            const texto = items.map(item => 
+                `${item.checked ? '✓' : ' '} ${item.texto}`
+            ).join('\n');
+            
+            const blob = new Blob([texto], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Lista de Compras Steph',
+                    text: 'Aquí tienes mi lista de compras:',
+                    files: [new File([blob], 'lista-de-compras.txt', { type: 'text/plain' })]
+                }).then(() => mostrarToast('Lista compartida con éxito'))
+                .catch(err => mostrarToast('Error al compartir: ' + err));
+            } else {
+                // Fallback para navegadores que no soportan navigator.share
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'lista-de-compras.txt';
+                document.body.appendChild(a);
+                a.click();
+                
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 0);
+                
+                mostrarToast('Descargando lista para compartir');
+            }
+        }
+
+        function importarLista(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const contenido = event.target.result;
+                    let items = [];
+                    
+                    if (file.name.endsWith('.json')) {
+                        items = JSON.parse(contenido);
+                    } else {
+                        // Importar desde texto plano
+                        const lineas = contenido.split('\n').filter(linea => linea.trim() !== '');
+                        items = lineas.map((linea, index) => ({
+                            id: Date.now() + index,
+                            texto: linea.trim(),
+                            checked: false
+                        }));
+                    }
+                    
+                    // Validar la estructura de datos (error corregido)
+                    if (!Array.isArray(items)) {
+                        mostrarToast('Formato inválido');
+                        console.error('Formato inválido');
+                        e.target.value = '';
+                        return;
+                    }
+                    
+                    guardarItemsLocalStorage(items);
+                    cargarLista();
+                    mostrarToast('Lista importada con éxito');
+                } catch (err) {
+                    mostrarToast('Error al importar: Formato inválido');
+                    console.error(err);
+                }
+                
+                // Resetear el input
+                e.target.value = '';
+            };
+            
+            reader.readAsText(file);
+        }
+
+        function mostrarToast(mensaje) {
+            toast.textContent = mensaje;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // --- Funciones Auxiliares ---
+
+        // Crea el elemento LI para un item
+        function crearElementoItem(item) {
+            const li = document.createElement('li');
+            li.className = 'item';
+            li.id = `item-${item.id}`;
+            li.setAttribute('role', 'listitem');
+
+            li.innerHTML = `
+                <div class="checkbox ${item.checked ? 'checked' : ''}" title="Marcar/Desmarcar" tabindex="0" role="checkbox" aria-checked="${item.checked}" aria-labelledby="text-${item.id}">
+                    <svg class="icon-check" viewBox="0 0 24 24">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                </div>
+                <div class="item-content">
+                    <span class="item-text ${item.checked ? 'checked' : ''}" id="text-${item.id}">${item.texto}</span>
+                </div>
+                <div class="item-actions">
+                     <button class="action-btn btn-edit" title="Editar Ítem" aria-label="Editar ${item.texto}">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                        </svg>
+                    </button>
+                    <button class="action-btn btn-delete" title="Eliminar Ítem" aria-label="Eliminar ${item.texto}">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+                        </svg>
+                    </button>
+                </div>
+            `;
+            
+            // Asignar eventos
+            li.querySelector('.checkbox').addEventListener('click', () => toggleCheck(item.id));
+            li.querySelector('.btn-edit').addEventListener('click', () => iniciarEdicion(item.id));
+            li.querySelector('.btn-delete').addEventListener('click', () => eliminarItem(item.id));
+            
+            listaCompras.appendChild(li);
+        }
+
+        // Obtiene los items de localStorage
+        function obtenerItemsLocalStorage() {
+            const itemsJSON = localStorage.getItem(localStorageKey);
+            try {
+                return itemsJSON ? JSON.parse(itemsJSON) : [];
+            } catch (e) {
+                console.error("Error parsing localStorage data: ", e);
+                return [];
+            }
+        }
+
+        // Guarda un array de items en localStorage
+        function guardarItemsLocalStorage(items) {
+            localStorage.setItem(localStorageKey, JSON.stringify(items));
+        }
+
+        // Muestra u oculta el botón "Limpiar Todo"
+        function actualizarVisibilidadBotonLimpiar() {
+             const items = obtenerItemsLocalStorage();
+             if (items.length > 0) {
+                 clearAllBtn.classList.remove('hidden');
+             } else {
+                 clearAllBtn.classList.add('hidden');
+             }
+        }
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarLista();
+            actualizarVisibilidadBotonLimpiar();
+        });
+    </script>
+</body>
+</html>
